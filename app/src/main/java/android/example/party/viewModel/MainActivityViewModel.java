@@ -1,12 +1,18 @@
 package android.example.party.viewModel;
 
+import android.app.Application;
 import android.example.party.Person;
 import android.example.party.view.MainActivity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.lifecycle.AndroidViewModel;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.ViewModel;
 
 import android.example.party.R;
 
@@ -23,39 +29,49 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-public class MainActivityViewModel {
-    private MainActivity mActivity;
+public class MainActivityViewModel extends AndroidViewModel {
+    private Application mApp;
     private Person mInviter;
-    private static final String PARTY_IMAGE_URL =
-            "https://st4.depositphotos.com/5586578/26114/i/450/depositphotos_261146100-stock-photo-girls-party-champagne-glasses-special.jpg";
 
-    public MainActivityViewModel(MainActivity mActivity) {
-        this.mActivity = mActivity;
+    private static final String PARTY_IMAGE_URL = "https://i.imgur.com/uPMGVt1.jpg";
+
+    public MainActivityViewModel(@NonNull Application application) {
+        super(application);
+        mApp = application;
+    }
+
+    private MutableLiveData<List<Person>> people;
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    public LiveData<List<Person>> getPeople() {
+        if (people == null) {
+            people = new MutableLiveData<>();
+            readGuests();
+        }
+        return people;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    public List<Person> readGuests() {
-        ArrayList<Person> people = new ArrayList<>();
+    private void readGuests() {
+        ArrayList<Person> guests = new ArrayList<>();
         try {
             JSONObject obj = new JSONObject(Objects.requireNonNull(loadJSONFromAsset()));
             JSONArray jsonArray = obj.getJSONArray("people");
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
                 Person person = new Person(jsonObject.getString("name"), jsonObject.getString("url"));
-                people.add(person);
+                guests.add(person);
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        for (Person person : people) {
+        for (Person person : guests) {
             if (person.getName().equals("Кристина")){
                 mInviter = person;
-                people.remove(person);
+                guests.remove(person);
             }
         }
-
-        return people;
+        people.setValue(guests);
     }
 
 
@@ -63,7 +79,7 @@ public class MainActivityViewModel {
     private String loadJSONFromAsset() {
         String json;
         try {
-            InputStream is = mActivity.getResources().openRawResource(R.raw.guests);
+            InputStream is = mApp.getApplicationContext().getResources().openRawResource(R.raw.guests);
             int size = is.available();
             byte[] buffer = new byte[size];
             is.read(buffer);

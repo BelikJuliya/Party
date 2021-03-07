@@ -34,8 +34,8 @@ public class PicturesDownloadAsyncTask extends AsyncTask<String, Void, Bitmap> {
         HttpURLConnection urlConnection = null;
         try {
             URL url = new URL(strings[0]);
-            urlConnection = (HttpURLConnection) url.openConnection();
             Log.d(TAG, "doInBackground: trying to connect");
+            urlConnection = (HttpURLConnection) url.openConnection();
             int responseCode = urlConnection.getResponseCode();
             Log.d(TAG, "doInBackground: " + responseCode);
             InputStream in = new BufferedInputStream(urlConnection.getInputStream());
