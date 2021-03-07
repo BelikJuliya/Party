@@ -2,8 +2,8 @@ package android.example.party.viewModel;
 
 import android.app.Application;
 import android.example.party.Person;
+import android.example.party.PicturesDownloadAsyncTask;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Build;
 
 import androidx.annotation.NonNull;
@@ -20,18 +20,16 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.concurrent.ExecutionException;
 
 public class MainActivityViewModel extends AndroidViewModel {
     private Application mApp;
     private Person mInviter;
-
-//    private static final String PARTY_IMAGE_URL = "https://i.imgur.com/uPMGVt1.jpg";
+    private static final String PARTY_IMAGE_URL = "https://i.imgur.com/uPMGVt1.jpg";
 
     public MainActivityViewModel(@NonNull Application application) {
         super(application);
@@ -39,6 +37,7 @@ public class MainActivityViewModel extends AndroidViewModel {
     }
 
     private MutableLiveData<List<Person>> people;
+
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public LiveData<List<Person>> getPeople() {
         if (people == null) {
@@ -56,7 +55,8 @@ public class MainActivityViewModel extends AndroidViewModel {
             JSONArray jsonArray = obj.getJSONArray("people");
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject jsonObject = jsonArray.getJSONObject(i);
-                Person person = new Person(jsonObject.getString("name"), jsonObject.getString("url"));
+                Person person = new Person(jsonObject.getString("name"),
+                        jsonObject.getString("url"), jsonObject.getBoolean("isInviter"));
                 guests.add(person);
             }
         } catch (JSONException e) {
@@ -64,7 +64,7 @@ public class MainActivityViewModel extends AndroidViewModel {
         }
 
         for (Person person : guests) {
-            if (person.getName().equals("Кристина")){
+            if (person.isInviter()) {
                 mInviter = person;
                 guests.remove(person);
             }
@@ -103,27 +103,32 @@ public class MainActivityViewModel extends AndroidViewModel {
 //        return people;
 //    }
 
+    public Person getInviter() {
+        return mInviter;
+    }
 
-
-    public Bitmap downLoadPicture(String url) {
-
+    public Bitmap downloadInviterAvatar() {
         Bitmap bitmap = null;
+        PicturesDownloadAsyncTask task = new PicturesDownloadAsyncTask();
+        task.execute(mInviter.getAvatar());
         try {
-            URL connection = new URL(url);
-            HttpURLConnection urlConnection;
-            urlConnection = (HttpURLConnection) connection.openConnection();
-            urlConnection.setRequestMethod("GET");
-            urlConnection.connect();
-            InputStream inputStream = urlConnection.getInputStream();
-            bitmap = BitmapFactory.decodeStream(inputStream);
-        } catch (IOException e) {
+            bitmap = task.get();
+        } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
         return bitmap;
     }
 
-    public Person getInviter() {
-        return mInviter;
+    public Bitmap downloadMainPicture() {
+        Bitmap bitmap = null;
+        PicturesDownloadAsyncTask task = new PicturesDownloadAsyncTask();
+        task.execute(PARTY_IMAGE_URL);
+        try {
+            bitmap = task.get();
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        return bitmap;
     }
 }
 

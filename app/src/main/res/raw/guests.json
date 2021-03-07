@@ -2,15 +2,18 @@
   "people": [
     {
       "name": "Инесса",
-      "url": "https://klike.net/uploads/posts/2019-03/1551511784_4.jpg"
+      "url": "https://klike.net/uploads/posts/2019-03/1551511784_4.jpg",
+      "isInviter": "false"
     },
     {
       "name": "Васисуалий",
-      "url": "https://whatsism.com/uploads/posts/2018-07/1530546770_rmk_vdjbx10.jpg"
+      "url": "https://whatsism.com/uploads/posts/2018-07/1530546770_rmk_vdjbx10.jpg",
+      "isInviter": "false"
     },
     {
       "name": "Кристина",
-      "url": "https://i.pinimg.com/originals/db/43/46/db43463d7a017a65017e20aee86679c5.jpg"
+      "url": "https://i.imgur.com/C0mzVSX.jpg",
+      "isInviter": "true"
     }
   ]
 }

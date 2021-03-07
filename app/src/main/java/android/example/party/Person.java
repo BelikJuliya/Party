@@ -4,30 +4,40 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
 @JsonAutoDetect
 public class Person {
-    private String name;
-    private String avatar;
+    private String mName;
+    private String mAvatar;
+    private boolean isInviter;
 
-    public Person(String name, String avatar) {
-        this.name = name;
-        this.avatar = avatar;
+    public Person(String name, String avatar, boolean isInviter) {
+        mName = name;
+        mAvatar = avatar;
+        this.isInviter = isInviter;
     }
 
     public Person() {
     }
 
     public String getName() {
-        return name;
+        return mName;
     }
 
     public String getAvatar() {
-        return avatar;
+        return mAvatar;
+    }
+
+    public boolean isInviter() {
+        return isInviter;
     }
 
     public void setName(String name) {
-        this.name = name;
+        mName = name;
     }
 
     public void setAvatar(String avatar) {
-        this.avatar = avatar;
+        mName = avatar;
+    }
+
+    public void setInviter(boolean inviter) {
+        isInviter = inviter;
     }
 }

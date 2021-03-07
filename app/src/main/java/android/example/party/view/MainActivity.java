@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
-import android.example.party.PicturesDownloadAsyncTask;
 import android.example.party.R;
 import android.example.party.adapters.RecyclerViewAdapter;
 import android.example.party.databinding.ActivityMainBinding;
@@ -17,15 +16,8 @@ import android.os.Bundle;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.squareup.picasso.Picasso;
-
-import java.util.Objects;
-import java.util.concurrent.ExecutionException;
-
-
 public class MainActivity extends AppCompatActivity {
     public ActivityMainBinding mActivityMainBinding;
-    private static final String PARTY_IMAGE_URL = "https://i.imgur.com/uPMGVt1.jpg";
     private static final String TITLE = "Вечеринка";
 
     @SuppressLint("SetTextI18n")
@@ -44,32 +36,19 @@ public class MainActivity extends AppCompatActivity {
         RecyclerView recyclerView = mActivityMainBinding.recycleView;
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
         MainActivityViewModel viewModel = new MainActivityViewModel(getApplication());
         viewModel.getPeople().observe(this, person -> {
-            RecyclerViewAdapter adapter = new RecyclerViewAdapter(person, this);
+            RecyclerViewAdapter adapter = new RecyclerViewAdapter(person);
             recyclerView.setAdapter(adapter);
         });
 
-        PicturesDownloadAsyncTask taskForMainPict = new PicturesDownloadAsyncTask(this);
-        taskForMainPict.execute(PARTY_IMAGE_URL);
-        try {
-            mActivityMainBinding.partyPictIv.setImageBitmap(taskForMainPict.get());
-        } catch (ExecutionException | InterruptedException  e) {
-            e.printStackTrace();
-        }
+        mActivityMainBinding.partyPictIv.setImageBitmap(viewModel.downloadMainPicture());
 
         ImageView inviterAvatar = findViewById(R.id.inviter_avatar);
-        PicturesDownloadAsyncTask taskForInviter = new PicturesDownloadAsyncTask(this);
-        taskForInviter.execute(viewModel.getInviter().getAvatar());
-        try {
-            inviterAvatar.setImageBitmap(taskForInviter.get());
-        } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
-        }
-
+        inviterAvatar.setImageBitmap(viewModel.downloadInviterAvatar());
         TextView inviterMessage = findViewById(R.id.inviter_name);
         String inviterName = viewModel.getInviter().getName();
         inviterMessage.setText(getString(R.string.invite) + " " + inviterName);
-       // Picasso.get().load(viewModel.getInviter().getAvatar()).into(inviterAvatar);
     }
 }

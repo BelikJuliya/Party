@@ -1,6 +1,5 @@
 package android.example.party;
 
-import android.example.party.view.MainActivity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -9,22 +8,15 @@ import android.util.Log;
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class PicturesDownloadAsyncTask extends AsyncTask<String, Void, Bitmap> {
     private final String TAG = this.getClass().getSimpleName();
-    private WeakReference<MainActivity> mActivity;
-
-    public PicturesDownloadAsyncTask(MainActivity activity) {
-        mActivity = new WeakReference<>(activity);
-    }
 
     @Override
     protected Bitmap doInBackground(String... strings) {
         Bitmap bitmap = null;
-
         HttpURLConnection urlConnection = null;
         try {
             URL url = new URL(strings[0]);
@@ -47,10 +39,5 @@ public class PicturesDownloadAsyncTask extends AsyncTask<String, Void, Bitmap> {
             urlConnection.disconnect();
         }
         return bitmap;
-    }
-
-    @Override
-    protected void onPostExecute(Bitmap bitmap) {
-       // mActivity.get().mActivityMainBinding.partyPictIv.setImageBitmap(bitmap);
     }
 }
