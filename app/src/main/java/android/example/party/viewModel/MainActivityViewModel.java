@@ -2,7 +2,6 @@ package android.example.party.viewModel;
 
 import android.app.Application;
 import android.example.party.Person;
-import android.example.party.view.MainActivity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
@@ -12,7 +11,6 @@ import androidx.annotation.RequiresApi;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
 
 import android.example.party.R;
 
@@ -128,3 +126,5 @@ public class MainActivityViewModel extends AndroidViewModel {
         return mInviter;
     }
 }
+
+

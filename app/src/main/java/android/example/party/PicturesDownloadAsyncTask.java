@@ -5,9 +5,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.util.Log;
-import android.widget.ImageView;
-
-import com.bumptech.glide.Glide;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
@@ -17,14 +14,11 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class PicturesDownloadAsyncTask extends AsyncTask<String, Void, Bitmap> {
-    private static final String TAG = "Picture";
+    private static final String TAG = "AsyncTask";
     private WeakReference<MainActivity> mActivity;
-    private ImageView mImageView;
 
-
-    public PicturesDownloadAsyncTask(MainActivity activity, ImageView image) {
+    public PicturesDownloadAsyncTask(MainActivity activity) {
         mActivity = new WeakReference<>(activity);
-        mImageView = image;
     }
 
     @Override
@@ -34,10 +28,14 @@ public class PicturesDownloadAsyncTask extends AsyncTask<String, Void, Bitmap> {
         HttpURLConnection urlConnection = null;
         try {
             URL url = new URL(strings[0]);
-            Log.d(TAG, "doInBackground: trying to connect");
+            Log.i(TAG, "doInBackground: trying to connect");
             urlConnection = (HttpURLConnection) url.openConnection();
             int responseCode = urlConnection.getResponseCode();
-            Log.d(TAG, "doInBackground: " + responseCode);
+            if (responseCode == 200) {
+                Log.i(TAG, "doInBackground: connected successfully");
+            } else {
+                Log.e(TAG, "doInBackground: connection failed, error: " + responseCode);
+            }
             InputStream in = new BufferedInputStream(urlConnection.getInputStream());
             bitmap = BitmapFactory.decodeStream(in);
             in.close();
@@ -53,6 +51,6 @@ public class PicturesDownloadAsyncTask extends AsyncTask<String, Void, Bitmap> {
 
     @Override
     protected void onPostExecute(Bitmap bitmap) {
-        mImageView.setImageBitmap(bitmap);
+        mActivity.get().mActivityMainBinding.partyPictIv.setImageBitmap(bitmap);
     }
 }

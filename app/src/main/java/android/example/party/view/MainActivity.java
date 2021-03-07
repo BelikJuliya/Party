@@ -1,11 +1,7 @@
 package android.example.party.view;
 
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.AndroidViewModel;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -45,17 +41,13 @@ public class MainActivity extends AppCompatActivity {
             recyclerView.setAdapter(adapter);
         });
 
-        startDownloading(mActivityMainBinding.partyPictIv);
+        PicturesDownloadAsyncTask task = new PicturesDownloadAsyncTask(this);
+        task.execute(PARTY_IMAGE_URL);
 
         ImageView inviterAvatar = findViewById(R.id.inviter_avatar);
         TextView inviterMessage = findViewById(R.id.inviter_name);
         String inviterName = viewModel.getInviter().getName();
         inviterMessage.setText(getString(R.string.invite) + " " + inviterName);
         Picasso.get().load(viewModel.getInviter().getAvatar()).into(inviterAvatar);
-    }
-
-    public void startDownloading(ImageView view) {
-        PicturesDownloadAsyncTask task = new PicturesDownloadAsyncTask(this, view);
-        task.execute(PARTY_IMAGE_URL);
     }
 }
