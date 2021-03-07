@@ -14,7 +14,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class PicturesDownloadAsyncTask extends AsyncTask<String, Void, Bitmap> {
-    private static final String TAG = "AsyncTask";
+    private final String TAG = this.getClass().getSimpleName();
     private WeakReference<MainActivity> mActivity;
 
     public PicturesDownloadAsyncTask(MainActivity activity) {
@@ -51,6 +51,6 @@ public class PicturesDownloadAsyncTask extends AsyncTask<String, Void, Bitmap> {
 
     @Override
     protected void onPostExecute(Bitmap bitmap) {
-        mActivity.get().mActivityMainBinding.partyPictIv.setImageBitmap(bitmap);
+       // mActivity.get().mActivityMainBinding.partyPictIv.setImageBitmap(bitmap);
     }
 }

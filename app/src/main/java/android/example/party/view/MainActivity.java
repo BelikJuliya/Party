@@ -1,6 +1,7 @@
 package android.example.party.view;
 
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -18,11 +19,14 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.Objects;
+import java.util.concurrent.ExecutionException;
+
 
 public class MainActivity extends AppCompatActivity {
     public ActivityMainBinding mActivityMainBinding;
     private static final String PARTY_IMAGE_URL = "https://i.imgur.com/uPMGVt1.jpg";
-
+    private static final String TITLE = "Вечеринка";
 
     @SuppressLint("SetTextI18n")
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -32,22 +36,40 @@ public class MainActivity extends AppCompatActivity {
         mActivityMainBinding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(mActivityMainBinding.getRoot());
 
+        ActionBar actionBar = getSupportActionBar();
+        assert actionBar != null;
+        actionBar.setTitle(TITLE);
+        actionBar.setDisplayHomeAsUpEnabled(true);
+
         RecyclerView recyclerView = mActivityMainBinding.recycleView;
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         MainActivityViewModel viewModel = new MainActivityViewModel(getApplication());
         viewModel.getPeople().observe(this, person -> {
-            RecyclerViewAdapter adapter = new RecyclerViewAdapter(person);
+            RecyclerViewAdapter adapter = new RecyclerViewAdapter(person, this);
             recyclerView.setAdapter(adapter);
         });
 
-        PicturesDownloadAsyncTask task = new PicturesDownloadAsyncTask(this);
-        task.execute(PARTY_IMAGE_URL);
+        PicturesDownloadAsyncTask taskForMainPict = new PicturesDownloadAsyncTask(this);
+        taskForMainPict.execute(PARTY_IMAGE_URL);
+        try {
+            mActivityMainBinding.partyPictIv.setImageBitmap(taskForMainPict.get());
+        } catch (ExecutionException | InterruptedException  e) {
+            e.printStackTrace();
+        }
 
         ImageView inviterAvatar = findViewById(R.id.inviter_avatar);
+        PicturesDownloadAsyncTask taskForInviter = new PicturesDownloadAsyncTask(this);
+        taskForInviter.execute(viewModel.getInviter().getAvatar());
+        try {
+            inviterAvatar.setImageBitmap(taskForInviter.get());
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
+
         TextView inviterMessage = findViewById(R.id.inviter_name);
         String inviterName = viewModel.getInviter().getName();
         inviterMessage.setText(getString(R.string.invite) + " " + inviterName);
-        Picasso.get().load(viewModel.getInviter().getAvatar()).into(inviterAvatar);
+       // Picasso.get().load(viewModel.getInviter().getAvatar()).into(inviterAvatar);
     }
 }

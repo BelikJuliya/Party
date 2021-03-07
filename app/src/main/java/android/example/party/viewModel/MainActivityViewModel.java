@@ -31,7 +31,7 @@ public class MainActivityViewModel extends AndroidViewModel {
     private Application mApp;
     private Person mInviter;
 
-    private static final String PARTY_IMAGE_URL = "https://i.imgur.com/uPMGVt1.jpg";
+//    private static final String PARTY_IMAGE_URL = "https://i.imgur.com/uPMGVt1.jpg";
 
     public MainActivityViewModel(@NonNull Application application) {
         super(application);
