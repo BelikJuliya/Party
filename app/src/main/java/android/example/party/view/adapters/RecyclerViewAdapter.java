@@ -1,7 +1,7 @@
 package android.example.party.view.adapters;
 
+import android.example.party.viewModel.MainActivityViewModel;
 import android.example.party.viewModel.Person;
-import android.example.party.viewModel.PicturesDownloadAsyncTask;
 import android.example.party.databinding.GuestBinding;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
@@ -12,15 +12,15 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.GuestViewHolder> {
     private List<Person> mGuests;
     private static GuestBinding mGuestBinding;
+    private MainActivityViewModel mViewModel;
 
-    public RecyclerViewAdapter(List<Person> demoItemForAdapters) {
+    public RecyclerViewAdapter(List<Person> demoItemForAdapters, MainActivityViewModel viewModel) {
         mGuests = demoItemForAdapters;
+        mViewModel = viewModel;
     }
 
     @NonNull
@@ -34,13 +34,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     @Override
     public void onBindViewHolder(GuestViewHolder holder, int position) {
         Person person = mGuests.get(position);
-        PicturesDownloadAsyncTask task = new PicturesDownloadAsyncTask();
-        task.execute(person.getAvatar());
-        try {
-            holder.mAvatar.setImageBitmap(task.get());
-        } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
-        }
+        holder.mAvatar.setImageBitmap(mViewModel.loadBitmap(person.getAvatar()));
         holder.mName.setText(person.getName());
     }
 

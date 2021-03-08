@@ -11,6 +11,8 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import static android.example.party.viewModel.MainActivityViewModel.addBitmapToMemoryCache;
+
 public class PicturesDownloadAsyncTask extends AsyncTask<String, Void, Bitmap> {
     private final String TAG = this.getClass().getSimpleName();
 
@@ -38,7 +40,7 @@ public class PicturesDownloadAsyncTask extends AsyncTask<String, Void, Bitmap> {
             assert urlConnection != null;
             urlConnection.disconnect();
         }
-//        addBitmapToMemoryCache(String.valueOf(params[0]), bitmap);
+        addBitmapToMemoryCache(strings[0], bitmap);
         return bitmap;
     }
 }

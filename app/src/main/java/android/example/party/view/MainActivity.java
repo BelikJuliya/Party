@@ -39,14 +39,16 @@ public class MainActivity extends AppCompatActivity {
 
         MainActivityViewModel viewModel = new MainActivityViewModel(getApplication());
         viewModel.getPeople().observe(this, person -> {
-            RecyclerViewAdapter adapter = new RecyclerViewAdapter(person);
+            RecyclerViewAdapter adapter = new RecyclerViewAdapter(person, viewModel);
             recyclerView.setAdapter(adapter);
         });
 
-        mActivityMainBinding.partyPictIv.setImageBitmap(viewModel.downloadMainPicture());
+        viewModel.initLRU();
+
+        mActivityMainBinding.partyPictIv.setImageBitmap(viewModel.loadBitmap(viewModel.readMainPictUrl()));
 
         ImageView inviterAvatar = findViewById(R.id.inviter_avatar);
-        inviterAvatar.setImageBitmap(viewModel.downloadInviterAvatar());
+        inviterAvatar.setImageBitmap(viewModel.loadBitmap(viewModel.getInviter().getAvatar()));
         TextView inviterMessage = findViewById(R.id.inviter_name);
         String inviterName = viewModel.getInviter().getName();
         inviterMessage.setText(getString(R.string.invite) + " " + inviterName);

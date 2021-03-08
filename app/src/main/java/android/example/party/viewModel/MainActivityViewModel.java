@@ -17,15 +17,12 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class MainActivityViewModel extends AndroidViewModel {
-    private Application mApp;
     private Person mInviter;
     private MainRepository mRepository;
-    private LruCache<String, Bitmap> memoryCache;
-    String url = "https://i.imgur.com/uPMGVt1.jpg";
+    private static LruCache<String, Bitmap> memoryCache;
 
     public MainActivityViewModel(@NonNull Application application) {
         super(application);
-        mApp = application;
         mRepository = new MainRepository(application);
     }
 
@@ -56,32 +53,7 @@ public class MainActivityViewModel extends AndroidViewModel {
         return mInviter;
     }
 
-    public Bitmap downloadInviterAvatar() {
-        Bitmap bitmap = null;
-        PicturesDownloadAsyncTask task = new PicturesDownloadAsyncTask();
-        task.execute(mInviter.getAvatar());
-        try {
-            bitmap = task.get();
-        } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
-        }
-        return bitmap;
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    public Bitmap downloadMainPicture() {
-        Bitmap bitmap = null;
-        PicturesDownloadAsyncTask task = new PicturesDownloadAsyncTask();
-        task.execute(mRepository.readMainPictureUrl());
-        try {
-            bitmap = task.get();
-        } catch (ExecutionException | InterruptedException e) {
-            e.printStackTrace();
-        }
-        return bitmap;
-    }
-
-    public Bitmap checkIfPicturePresent(String name) {
+    public Bitmap initLRU() {
         final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
         final int cacheSize = maxMemory / 8;
         memoryCache = new LruCache<String, Bitmap>(cacheSize) {
@@ -93,13 +65,36 @@ public class MainActivityViewModel extends AndroidViewModel {
         return null;
     }
 
-    public void addBitmapToMemoryCache(String key, Bitmap bitmap) {
+    public Bitmap loadBitmap(String url) {
+        final String imageKey = String.valueOf(url);
+
+        Bitmap bitmap = getBitmapFromMemCache(imageKey);
+        if (bitmap != null) {
+            return bitmap;
+        } else {
+            PicturesDownloadAsyncTask task = new PicturesDownloadAsyncTask();
+            task.execute(url);
+            try {
+                bitmap = task.get();
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+            return bitmap;
+        }
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    public String readMainPictUrl(){
+        return mRepository.readMainPictureUrl();
+    }
+
+    static void addBitmapToMemoryCache(String key, Bitmap bitmap) {
         if (getBitmapFromMemCache(key) == null) {
             memoryCache.put(key, bitmap);
         }
     }
 
-    public Bitmap getBitmapFromMemCache(String key) {
+    private static Bitmap getBitmapFromMemCache(String key) {
         return memoryCache.get(key);
     }
 }
