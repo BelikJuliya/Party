@@ -19,9 +19,9 @@ import java.util.concurrent.ExecutionException;
 public class MainActivityViewModel extends AndroidViewModel {
     private Application mApp;
     private Person mInviter;
-    private static final String PARTY_IMAGE_URL = "https://i.imgur.com/uPMGVt1.jpg";
     private MainRepository mRepository;
     private LruCache<String, Bitmap> memoryCache;
+    String url = "https://i.imgur.com/uPMGVt1.jpg";
 
     public MainActivityViewModel(@NonNull Application application) {
         super(application);
@@ -29,15 +29,15 @@ public class MainActivityViewModel extends AndroidViewModel {
         mRepository = new MainRepository(application);
     }
 
-    private MutableLiveData<List<Person>> people;
+    private MutableLiveData<List<Person>> mPeople;
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public LiveData<List<Person>> getPeople() {
-        if (people == null) {
-            people = new MutableLiveData<>();
+        if (mPeople == null) {
+            mPeople = new MutableLiveData<>();
             readGuests();
         }
-        return people;
+        return mPeople;
     }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -49,7 +49,7 @@ public class MainActivityViewModel extends AndroidViewModel {
                 guests.remove(person);
             }
         }
-        people.setValue(guests);
+        mPeople.setValue(guests);
     }
 
     public Person getInviter() {
@@ -68,10 +68,11 @@ public class MainActivityViewModel extends AndroidViewModel {
         return bitmap;
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public Bitmap downloadMainPicture() {
         Bitmap bitmap = null;
         PicturesDownloadAsyncTask task = new PicturesDownloadAsyncTask();
-        task.execute(PARTY_IMAGE_URL);
+        task.execute(mRepository.readMainPictureUrl());
         try {
             bitmap = task.get();
         } catch (ExecutionException | InterruptedException e) {
