@@ -1,4 +1,4 @@
-package android.example.party;
+package android.example.party.viewModel;
 
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 

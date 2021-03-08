@@ -1,4 +1,4 @@
-package android.example.party;
+package android.example.party.viewModel;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -38,6 +38,7 @@ public class PicturesDownloadAsyncTask extends AsyncTask<String, Void, Bitmap> {
             assert urlConnection != null;
             urlConnection.disconnect();
         }
+//        addBitmapToMemoryCache(String.valueOf(params[0]), bitmap);
         return bitmap;
     }
 }

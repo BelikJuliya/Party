@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 import android.example.party.R;
-import android.example.party.adapters.RecyclerViewAdapter;
+import android.example.party.view.adapters.RecyclerViewAdapter;
 import android.example.party.databinding.ActivityMainBinding;
 import android.example.party.viewModel.MainActivityViewModel;
 import android.os.Build;

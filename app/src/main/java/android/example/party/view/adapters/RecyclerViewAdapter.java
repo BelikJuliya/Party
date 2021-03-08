@@ -1,9 +1,8 @@
-package android.example.party.adapters;
+package android.example.party.view.adapters;
 
-import android.example.party.Person;
-import android.example.party.PicturesDownloadAsyncTask;
+import android.example.party.viewModel.Person;
+import android.example.party.viewModel.PicturesDownloadAsyncTask;
 import android.example.party.databinding.GuestBinding;
-import android.example.party.view.MainActivity;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.ImageView;

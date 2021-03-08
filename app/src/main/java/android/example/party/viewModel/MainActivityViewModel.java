@@ -1,10 +1,10 @@
 package android.example.party.viewModel;
 
 import android.app.Application;
-import android.example.party.Person;
-import android.example.party.PicturesDownloadAsyncTask;
+import android.example.party.model.MainRepository;
 import android.graphics.Bitmap;
 import android.os.Build;
+import android.util.LruCache;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -12,28 +12,21 @@ import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import android.example.party.R;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
 public class MainActivityViewModel extends AndroidViewModel {
     private Application mApp;
     private Person mInviter;
     private static final String PARTY_IMAGE_URL = "https://i.imgur.com/uPMGVt1.jpg";
+    private MainRepository mRepository;
+    private LruCache<String, Bitmap> memoryCache;
 
     public MainActivityViewModel(@NonNull Application application) {
         super(application);
         mApp = application;
+        mRepository = new MainRepository(application);
     }
 
     private MutableLiveData<List<Person>> people;
@@ -49,20 +42,7 @@ public class MainActivityViewModel extends AndroidViewModel {
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     private void readGuests() {
-        ArrayList<Person> guests = new ArrayList<>();
-        try {
-            JSONObject obj = new JSONObject(Objects.requireNonNull(loadJSONFromAsset()));
-            JSONArray jsonArray = obj.getJSONArray("people");
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject jsonObject = jsonArray.getJSONObject(i);
-                Person person = new Person(jsonObject.getString("name"),
-                        jsonObject.getString("url"), jsonObject.getBoolean("isInviter"));
-                guests.add(person);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
+        ArrayList<Person> guests = (ArrayList<Person>) mRepository.readPeople();
         for (Person person : guests) {
             if (person.isInviter()) {
                 mInviter = person;
@@ -71,37 +51,6 @@ public class MainActivityViewModel extends AndroidViewModel {
         }
         people.setValue(guests);
     }
-
-
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    private String loadJSONFromAsset() {
-        String json;
-        try {
-            InputStream is = mApp.getApplicationContext().getResources().openRawResource(R.raw.guests);
-            int size = is.available();
-            byte[] buffer = new byte[size];
-            is.read(buffer);
-            is.close();
-            json = new String(buffer, StandardCharsets.UTF_8);
-        } catch (IOException ex) {
-            ex.printStackTrace();
-            return null;
-        }
-        return json;
-    }
-
-//    public List<Person> readPeopleFromJSON(String json){
-//        StringReader reader = new StringReader(json);
-//        ObjectMapper mapper = new ObjectMapper();
-//        ArrayList <Person> people = null;
-//        try {
-//            people = mapper.readValue(reader, mapper.getTypeFactory().constructCollectionType(List.class, Person.class));
-    //people =Arrays.asList(mapper.readValue(json, Person[].class))
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//        return people;
-//    }
 
     public Person getInviter() {
         return mInviter;
@@ -129,6 +78,28 @@ public class MainActivityViewModel extends AndroidViewModel {
             e.printStackTrace();
         }
         return bitmap;
+    }
+
+    public Bitmap checkIfPicturePresent(String name) {
+        final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
+        final int cacheSize = maxMemory / 8;
+        memoryCache = new LruCache<String, Bitmap>(cacheSize) {
+            @Override
+            protected int sizeOf(String key, Bitmap bitmap) {
+                return bitmap.getByteCount() / 1024;
+            }
+        };
+        return null;
+    }
+
+    public void addBitmapToMemoryCache(String key, Bitmap bitmap) {
+        if (getBitmapFromMemCache(key) == null) {
+            memoryCache.put(key, bitmap);
+        }
+    }
+
+    public Bitmap getBitmapFromMemCache(String key) {
+        return memoryCache.get(key);
     }
 }
 
