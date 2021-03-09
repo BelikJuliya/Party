@@ -1,59 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".view.MainActivity">
+    android:orientation="vertical">
 
-    <ImageView
-        android:id="@+id/party_pict_iv"
-        android:layout_width="411dp"
-        android:layout_height="238dp"
-        android:layout_gravity="center"
-        android:background="@color/colorPrimaryDark"
-        android:scaleType="centerCrop"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <include
-        android:id="@+id/include"
-        layout="@layout/inviter"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="76dp"
-        app:layout_constraintBottom_toTopOf="@+id/textView"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/party_pict_iv"
-        app:layout_constraintVertical_bias="0.658" />
+        android:layout_height="@dimen/zero_height"
+        android:layout_weight="1"
+        android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/textView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/recycler_title"
-        app:layout_constraintBottom_toTopOf="@+id/recycle_view"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.051"
-        app:layout_constraintStart_toStartOf="parent" />
+        <ImageView
+            android:id="@+id/party_pict_image_view"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/main_image_height"
+            android:layout_gravity="center"
+            android:scaleType="centerCrop"/>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recycle_view"
-        android:layout_width="356dp"
-        android:layout_height="186dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:scrollbars="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.346"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_goneMarginLeft="16dp">
+        <include
+            android:id="@+id/include"
+            layout="@layout/inviter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
 
-    </androidx.recyclerview.widget.RecyclerView>
+    </LinearLayout>
 
-    <!--    </LinearLayout>-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/zero_height"
+        android:layout_weight="1"
+        android:orientation="vertical">
 
+        <TextView
+            android:id="@+id/go_with_you_text_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/tv_margin_bottom"
+            android:layout_marginTop="@dimen/margin_top"
+            android:layout_marginStart="@dimen/margin_start"
+            android:text="@string/recycler_title"
+            android:layout_marginLeft="16dp" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycle_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginStart="@dimen/margin_start"
+            android:layout_marginLeft="@dimen/margin_start"
+            android:scrollbars="vertical">
+
+        </androidx.recyclerview.widget.RecyclerView>
+
+    </LinearLayout>
+
+</LinearLayout>

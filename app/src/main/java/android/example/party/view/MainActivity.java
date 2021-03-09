@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
 
         viewModel.initLRU();
 
-        mActivityMainBinding.partyPictIv.setImageBitmap(viewModel.loadBitmap(viewModel.readMainPictUrl()));
+        mActivityMainBinding.partyPictImageView.setImageBitmap(viewModel.loadBitmap(viewModel.readMainPictUrl()));
 
         ImageView inviterAvatar = findViewById(R.id.inviter_avatar);
         inviterAvatar.setImageBitmap(viewModel.loadBitmap(viewModel.getInviter().getAvatar()));
