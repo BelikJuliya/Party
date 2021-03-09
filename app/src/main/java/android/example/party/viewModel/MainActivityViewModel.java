@@ -1,10 +1,15 @@
 package android.example.party.viewModel;
 
 import android.app.Application;
+import android.content.Context;
 import android.example.party.model.MainRepository;
 import android.graphics.Bitmap;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Build;
+import android.util.Log;
 import android.util.LruCache;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -17,13 +22,16 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class MainActivityViewModel extends AndroidViewModel {
+    private static final String TAG = "Connection";
     private Person mInviter;
     private MainRepository mRepository;
     private static LruCache<String, Bitmap> memoryCache;
+    private Context mApp;
 
     public MainActivityViewModel(@NonNull Application application) {
         super(application);
         mRepository = new MainRepository(application);
+        mApp = application;
     }
 
     private MutableLiveData<List<Person>> mPeople;
@@ -53,7 +61,7 @@ public class MainActivityViewModel extends AndroidViewModel {
         return mInviter;
     }
 
-    public Bitmap initLRU() {
+    public void initLRU() {
         final int maxMemory = (int) (Runtime.getRuntime().maxMemory() / 1024);
         final int cacheSize = maxMemory / 8;
         memoryCache = new LruCache<String, Bitmap>(cacheSize) {
@@ -62,29 +70,30 @@ public class MainActivityViewModel extends AndroidViewModel {
                 return bitmap.getByteCount() / 1024;
             }
         };
-        return null;
     }
 
     public Bitmap loadBitmap(String url) {
-        final String imageKey = String.valueOf(url);
-
-        Bitmap bitmap = getBitmapFromMemCache(imageKey);
-        if (bitmap != null) {
-            return bitmap;
-        } else {
-            PicturesDownloadAsyncTask task = new PicturesDownloadAsyncTask();
-            task.execute(url);
-            try {
-                bitmap = task.get();
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
+        if (checkNetwork()) {
+            Bitmap bitmap = getBitmapFromMemCache(url);
+            if (bitmap != null) {
+                return bitmap;
+            } else {
+                PicturesDownloadAsyncTask task = new PicturesDownloadAsyncTask();
+                task.execute(url);
+                try {
+                    bitmap = task.get();
+                } catch (InterruptedException | ExecutionException e) {
+                    e.printStackTrace();
+                }
+                return bitmap;
             }
-            return bitmap;
+        } else {
+            return null;
         }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    public String readMainPictUrl(){
+    public String readMainPictUrl() {
         return mRepository.readMainPictureUrl();
     }
 
@@ -96,6 +105,26 @@ public class MainActivityViewModel extends AndroidViewModel {
 
     private static Bitmap getBitmapFromMemCache(String key) {
         return memoryCache.get(key);
+    }
+
+    public boolean checkNetwork() {
+        ConnectivityManager cm = (ConnectivityManager) mApp.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+        if (wifiInfo != null && wifiInfo.isConnected()) {
+            Log.d(TAG, "onCreate: internet connected");
+            return true;
+        }
+        wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+        if (wifiInfo != null && wifiInfo.isConnected()) {
+            Log.d(TAG, "onCreate: mobile internet is in use");
+            return true;
+        }
+        wifiInfo = cm.getActiveNetworkInfo();
+        if (wifiInfo != null && wifiInfo.isConnected()) {
+            Log.d(TAG, "onCreate: WIFI is in use");
+            return true;
+        }
+        return false;
     }
 }
 

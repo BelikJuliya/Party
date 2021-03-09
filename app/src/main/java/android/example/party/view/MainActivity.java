@@ -13,8 +13,10 @@ import android.example.party.databinding.ActivityMainBinding;
 import android.example.party.viewModel.MainActivityViewModel;
 import android.os.Build;
 import android.os.Bundle;
+
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
     public ActivityMainBinding mActivityMainBinding;
@@ -25,6 +27,12 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        MainActivityViewModel viewModel = new MainActivityViewModel(getApplication());
+
+        if (!viewModel.checkNetwork()){
+            Toast.makeText(this, "Please check internet connection", Toast.LENGTH_SHORT).show();
+        }
+
         mActivityMainBinding = ActivityMainBinding.inflate(getLayoutInflater());
         setContentView(mActivityMainBinding.getRoot());
 
@@ -36,19 +44,16 @@ public class MainActivity extends AppCompatActivity {
         RecyclerView recyclerView = mActivityMainBinding.recycleView;
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-
-        MainActivityViewModel viewModel = new MainActivityViewModel(getApplication());
+        viewModel.initLRU();
         viewModel.getPeople().observe(this, person -> {
             RecyclerViewAdapter adapter = new RecyclerViewAdapter(person, viewModel);
             recyclerView.setAdapter(adapter);
         });
 
-        viewModel.initLRU();
-
-        mActivityMainBinding.partyPictImageView.setImageBitmap(viewModel.loadBitmap(viewModel.readMainPictUrl()));
+       // mActivityMainBinding.partyPictImageView.setImageBitmap(viewModel.loadBitmap(viewModel.readMainPictUrl()));
 
         ImageView inviterAvatar = findViewById(R.id.inviter_avatar);
-        inviterAvatar.setImageBitmap(viewModel.loadBitmap(viewModel.getInviter().getAvatar()));
+       // inviterAvatar.setImageBitmap(viewModel.loadBitmap(viewModel.getInviter().getAvatar()));
         TextView inviterMessage = findViewById(R.id.inviter_name);
         String inviterName = viewModel.getInviter().getName();
         inviterMessage.setText(getString(R.string.invite) + " " + inviterName);

@@ -34,7 +34,7 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     @Override
     public void onBindViewHolder(GuestViewHolder holder, int position) {
         Person person = mGuests.get(position);
-        holder.mAvatar.setImageBitmap(mViewModel.loadBitmap(person.getAvatar()));
+        //holder.mAvatar.setImageBitmap(mViewModel.loadBitmap(person.getAvatar()));
         holder.mName.setText(person.getName());
     }
 
