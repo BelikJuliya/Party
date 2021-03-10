@@ -1,26 +1,41 @@
 package android.example.party.view.adapters;
 
-import android.example.party.viewModel.MainActivityViewModel;
 import android.example.party.viewModel.Person;
 import android.example.party.databinding.GuestBinding;
+import android.graphics.Bitmap;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.GuestViewHolder> {
     private List<Person> mGuests;
     private static GuestBinding mGuestBinding;
-    private MainActivityViewModel mViewModel;
+    private Bitmap mBitmap;
+    private HashMap<Integer, Bitmap> map;
 
-    public RecyclerViewAdapter(List<Person> demoItemForAdapters, MainActivityViewModel viewModel) {
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public RecyclerViewAdapter(List<Person> demoItemForAdapters) {
         mGuests = demoItemForAdapters;
-        mViewModel = viewModel;
+//        mGuests = demoItemForAdapters.stream().filter(Person::isInviter).collect(Collectors.toList());
+//        mGuests = demoItemForAdapters.stream().map(if(person -> person.isInviter()))
+//        demoItemForAdapters.forEach(person -> {
+//            if (!person.isInviter()) mGuests.remove(person);
+//        });
+
+//        demoItemForAdapters.stream().filter(person -> {
+//            if (!person.isInviter())
+//        })
+//        mGuests = demoItemForAdapters.stream().filter(person -> !person.isInviter()).collect(Collectors.toList());
     }
 
     @NonNull
@@ -33,9 +48,8 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
 
     @Override
     public void onBindViewHolder(GuestViewHolder holder, int position) {
-        Person person = mGuests.get(position);
-        //holder.mAvatar.setImageBitmap(mViewModel.loadBitmap(person.getAvatar()));
-        holder.mName.setText(person.getName());
+        holder.mAvatar.setImageBitmap(mBitmap);
+        holder.mName.setText(mGuests.get(position).getName());
     }
 
     @Override
@@ -53,5 +67,11 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             mName = binding.guestNameTv;
             mAvatar = binding.guestAvatarIv;
         }
+    }
+
+    public void setNewBitmap(Bitmap bitmap, int position) {
+        map.put(position, bitmap);
+//        this.mBitmap = mBitmap;
+        notifyDataSetChanged();
     }
 }

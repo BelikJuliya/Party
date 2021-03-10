@@ -1,13 +1,16 @@
 package android.example.party.viewModel;
 
+import android.example.party.view.adapters.RecyclerViewAdapter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.ImageView;
 
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.ref.WeakReference;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.UnknownHostException;
@@ -17,10 +20,17 @@ import static android.example.party.viewModel.MainActivityViewModel.addBitmapToM
 public class PicturesDownloadAsyncTask extends AsyncTask<String, Void, Bitmap> {
     private final String TAG = this.getClass().getSimpleName();
     private static final int SUCCESS = 200;
+    private WeakReference<ImageView> mImage;
+
+    public PicturesDownloadAsyncTask(ImageView view) {
+        mImage = new WeakReference<>(view);
+    }
+
+    public PicturesDownloadAsyncTask(RecyclerViewAdapter adapter) {
+    }
 
     @Override
     protected Bitmap doInBackground(String... strings) {
-
         Bitmap bitmap = null;
         HttpURLConnection urlConnection = null;
         InputStream in = null;
@@ -37,16 +47,16 @@ public class PicturesDownloadAsyncTask extends AsyncTask<String, Void, Bitmap> {
             in = new BufferedInputStream(urlConnection.getInputStream());
             bitmap = BitmapFactory.decodeStream(in);
             addBitmapToMemoryCache(strings[0], bitmap);
-
         } catch (UnknownHostException e) {
             Log.d(TAG, "doInBackground: " + e.getMessage());
             e.printStackTrace();
             return null;
-        } catch (IOException e){
+        } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            assert urlConnection != null;
-            urlConnection.disconnect();
+            if (urlConnection != null){
+                urlConnection.disconnect();
+            }
             try {
                 if (in != null) {
                     in.close();
@@ -56,5 +66,10 @@ public class PicturesDownloadAsyncTask extends AsyncTask<String, Void, Bitmap> {
             }
         }
         return bitmap;
+    }
+
+    @Override
+    protected void onPostExecute(Bitmap bitmap) {
+        mImage.get().setImageBitmap(bitmap);
     }
 }
