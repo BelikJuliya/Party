@@ -22,11 +22,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 public class MainActivityViewModel extends AndroidViewModel {
-    private final String TAG = this.getClass().getSimpleName();
     private MainRepository mRepository;
     private static LruCache<String, Bitmap> memoryCache;
     private Application mApp;
-    private RecyclerViewAdapter mAdapter;
     private MutableLiveData<List<Person>> mPeople;
 
     public MainActivityViewModel(@NonNull Application application) {
@@ -56,14 +54,14 @@ public class MainActivityViewModel extends AndroidViewModel {
     }
 
     public void loadBitmap(String url, ImageView imageView) {
-        if (checkNetwork()) {
+        if (isNetworkAvailable()) {
             PicturesDownloadAsyncTask task = new PicturesDownloadAsyncTask(imageView);
             task.execute(url);
         }
     }
 
     public void loadBitmapForRecycler(RecyclerView recyclerView) {
-        if (checkNetwork()) {
+        if (isNetworkAvailable()) {
             RecyclerAsyncTask task = new RecyclerAsyncTask(recyclerView);
             task.execute(mPeople.getValue());
         }
@@ -80,28 +78,15 @@ public class MainActivityViewModel extends AndroidViewModel {
         }
     }
 
-    public boolean checkNetwork() {
-        ConnectivityManager cm = (ConnectivityManager) mApp.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
-        if (wifiInfo != null && wifiInfo.isConnected()) {
-            Log.d(TAG, "onCreate: internet connected");
-            return true;
-        }
-        wifiInfo = cm.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
-        if (wifiInfo != null && wifiInfo.isConnected()) {
-            Log.d(TAG, "onCreate: mobile internet is in use");
-            return true;
-        }
-        wifiInfo = cm.getActiveNetworkInfo();
-        if (wifiInfo != null && wifiInfo.isConnected()) {
-            Log.d(TAG, "onCreate: WIFI is in use");
-            return true;
-        }
-        return false;
-    }
-
     public static Bitmap tryToGetBitmapFromCache(String url) {
         return memoryCache.get(url);
+    }
+
+    public boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) mApp.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null;
     }
 }
 

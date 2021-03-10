@@ -22,27 +22,24 @@ import static android.example.party.viewModel.MainActivityViewModel.tryToGetBitm
 
 
 public class MainActivity extends AppCompatActivity {
-    public ActivityMainBinding mActivityMainBinding;
-    private static final String TITLE = "Вечеринка";
 
     @SuppressLint("SetTextI18n")
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         MainActivityViewModel viewModel = new MainActivityViewModel(getApplication());
-
-        if (!viewModel.checkNetwork()) {
-            Toast.makeText(this, "Please check internet connection", Toast.LENGTH_SHORT).show();
-        }
-
-        mActivityMainBinding = ActivityMainBinding.inflate(getLayoutInflater());
-        setContentView(mActivityMainBinding.getRoot());
+        ActivityMainBinding activityBinding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(activityBinding.getRoot());
 
         ActionBar actionBar = getSupportActionBar();
         assert actionBar != null;
-        actionBar.setTitle(TITLE);
+        actionBar.setTitle(getString(R.string.title));
         actionBar.setDisplayHomeAsUpEnabled(true);
 
+
+        if (!viewModel.isNetworkAvailable()) {
+            Toast.makeText(this, "Please check internet connection", Toast.LENGTH_SHORT).show();
+        }
 
         ImageView inviterAvatar = findViewById(R.id.inviter_avatar);
         TextView inviterName = findViewById(R.id.inviter_name);
@@ -52,12 +49,12 @@ public class MainActivity extends AppCompatActivity {
         //if there is a bitmap for main picture in cache, get it from there, otherwise download it from internet
         Bitmap mainPictBm = tryToGetBitmapFromCache(viewModel.readMainPictUrl());
         if (mainPictBm == null) {
-            viewModel.loadBitmap(viewModel.readMainPictUrl(), mActivityMainBinding.partyPictImageView);
+            viewModel.loadBitmap(viewModel.readMainPictUrl(), activityBinding.partyPictImageView);
         } else {
-            mActivityMainBinding.partyPictImageView.setImageBitmap(mainPictBm);
+            activityBinding.partyPictImageView.setImageBitmap(mainPictBm);
         }
 
-        RecyclerView recyclerView = mActivityMainBinding.recycleView;
+        RecyclerView recyclerView = activityBinding.recycleView;
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
