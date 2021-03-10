@@ -87,11 +87,11 @@ public class MainActivityViewModel extends AndroidViewModel {
         return mRepository.readMainPictureUrl();
     }
 
-//    static void addBitmapToMemoryCache(String key, Bitmap bitmap) {
-//        if (getBitmapFromMemCache(key) == null) {
-//            memoryCache.put(key, bitmap);
-//        }
-//    }
+    static void addBitmapToMemoryCache(String key, Bitmap bitmap) {
+        if (tryToGetBitmapFromCache(key) == null) {
+            memoryCache.put(key, bitmap);
+        }
+    }
 
 //    private static Bitmap getBitmapFromMemCache(String key) {
 //        return memoryCache.get(key);
@@ -115,6 +115,10 @@ public class MainActivityViewModel extends AndroidViewModel {
             return true;
         }
         return false;
+    }
+
+    public static Bitmap tryToGetBitmapFromCache(String url){
+        return memoryCache.get(url);
     }
 }
 
