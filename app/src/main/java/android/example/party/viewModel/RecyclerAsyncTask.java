@@ -1,6 +1,7 @@
 package android.example.party.viewModel;
 
 import android.example.party.view.adapters.RecyclerViewAdapter;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -18,6 +19,9 @@ import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.example.party.viewModel.MainActivityViewModel.addBitmapToMemoryCache;
+
 public class RecyclerAsyncTask extends AsyncTask<List<Person>, Void, List<Person>> {
     private WeakReference<RecyclerView> mRecyclerView;
     private final String TAG = this.getClass().getSimpleName();
@@ -45,7 +49,12 @@ public class RecyclerAsyncTask extends AsyncTask<List<Person>, Void, List<Person
                         Log.e(TAG, "doInBackground: connection failed, error: " + responseCode);
                     }
                     in = new BufferedInputStream(urlConnection.getInputStream());
-                    guests.add(new Person(people[0].get(i).getName(), BitmapFactory.decodeStream(in)));
+                    Bitmap bitmap = BitmapFactory.decodeStream(in);
+                    guests.add(new Person(people[0].get(i).getName(), bitmap));
+
+                    if (bitmap != null) {
+                        addBitmapToMemoryCache(people[0].get(i).getUrl(), bitmap);
+                    }
 
                 } catch (UnknownHostException e) {
                     Log.d(TAG, "doInBackground: " + e.getMessage());

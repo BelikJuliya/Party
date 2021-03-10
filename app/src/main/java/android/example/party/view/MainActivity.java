@@ -10,7 +10,6 @@ import android.annotation.SuppressLint;
 import android.example.party.R;
 import android.example.party.databinding.ActivityMainBinding;
 import android.example.party.viewModel.MainActivityViewModel;
-import android.example.party.viewModel.Person;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Bundle;
@@ -45,7 +44,6 @@ public class MainActivity extends AppCompatActivity {
         actionBar.setDisplayHomeAsUpEnabled(true);
 
 
-
         ImageView inviterAvatar = findViewById(R.id.inviter_avatar);
         TextView inviterName = findViewById(R.id.inviter_name);
 
@@ -59,14 +57,12 @@ public class MainActivity extends AppCompatActivity {
             mActivityMainBinding.partyPictImageView.setImageBitmap(mainPictBm);
         }
 
-
-
         RecyclerView recyclerView = mActivityMainBinding.recycleView;
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
         viewModel.getPeople().observe(this, people -> {
-            for (Person person : people) {
+            people.forEach(person -> {
                 if (person.isInviter()) {
                     inviterName.setText(getString(R.string.invite) + " " + person.getName());
 
@@ -78,8 +74,8 @@ public class MainActivity extends AppCompatActivity {
                         inviterAvatar.setImageBitmap(null);
                     }
                 }
-            }
-            viewModel.loadBitmapForRecycler(recyclerView);
+                viewModel.loadBitmapForRecycler(recyclerView);
+            });
         });
     }
 }
