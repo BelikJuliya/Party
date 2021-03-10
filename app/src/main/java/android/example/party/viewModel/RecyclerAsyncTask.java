@@ -20,14 +20,13 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
-import static android.example.party.viewModel.MainActivityViewModel.addBitmapToMemoryCache;
 
 public class RecyclerAsyncTask extends AsyncTask<List<Person>, Void, List<Person>> {
     private WeakReference<RecyclerView> mRecyclerView;
     private final String TAG = this.getClass().getSimpleName();
     private static final int SUCCESS = 200;
 
-    public RecyclerAsyncTask(RecyclerView recyclerView) {
+    RecyclerAsyncTask(RecyclerView recyclerView) {
         mRecyclerView = new WeakReference<>(recyclerView);
     }
 
@@ -53,7 +52,7 @@ public class RecyclerAsyncTask extends AsyncTask<List<Person>, Void, List<Person
                     guests.add(new Person(people[0].get(i).getName(), bitmap));
 
                     if (bitmap != null) {
-                        addBitmapToMemoryCache(people[0].get(i).getUrl(), bitmap);
+                        MainActivityViewModel.addBitmapToMemoryCache(people[0].get(i).getUrl(), bitmap);
                     }
 
                 } catch (UnknownHostException e) {

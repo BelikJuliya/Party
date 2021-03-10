@@ -22,7 +22,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 public class MainActivityViewModel extends AndroidViewModel {
-    private static final String TAG = "Connection";
+    private final String TAG = this.getClass().getSimpleName();
     private MainRepository mRepository;
     private static LruCache<String, Bitmap> memoryCache;
     private Application mApp;
@@ -57,22 +57,9 @@ public class MainActivityViewModel extends AndroidViewModel {
 
     public void loadBitmap(String url, ImageView imageView) {
         if (checkNetwork()) {
-            //Bitmap bitmap = getBitmapFromMemCache(url);
-//            if (bitmap != null) {
-//                return bitmap;
-//            } else {
             PicturesDownloadAsyncTask task = new PicturesDownloadAsyncTask(imageView);
             task.execute(url);
-//                try {
-//                    //bitmap = task.get();
-//                } catch (InterruptedException | ExecutionException e) {
-//                    e.printStackTrace();
-//                }
-//                return bitmap;
         }
-//        } else {
-//            return null;
-        //}
     }
 
     public void loadBitmapForRecycler(RecyclerView recyclerView) {
@@ -87,15 +74,11 @@ public class MainActivityViewModel extends AndroidViewModel {
         return mRepository.readMainPictureUrl();
     }
 
-    static void addBitmapToMemoryCache(String key, Bitmap bitmap) {
+    public static void addBitmapToMemoryCache(String key, Bitmap bitmap) {
         if (tryToGetBitmapFromCache(key) == null) {
             memoryCache.put(key, bitmap);
         }
     }
-
-//    private static Bitmap getBitmapFromMemCache(String key) {
-//        return memoryCache.get(key);
-//    }
 
     public boolean checkNetwork() {
         ConnectivityManager cm = (ConnectivityManager) mApp.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -117,7 +100,7 @@ public class MainActivityViewModel extends AndroidViewModel {
         return false;
     }
 
-    public static Bitmap tryToGetBitmapFromCache(String url){
+    public static Bitmap tryToGetBitmapFromCache(String url) {
         return memoryCache.get(url);
     }
 }

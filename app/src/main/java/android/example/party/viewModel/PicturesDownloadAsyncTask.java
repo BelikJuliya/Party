@@ -14,7 +14,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.UnknownHostException;
 
-import static android.example.party.viewModel.MainActivityViewModel.addBitmapToMemoryCache;
 
 public class PicturesDownloadAsyncTask extends AsyncTask<String, Void, Bitmap> {
     private final String TAG = this.getClass().getSimpleName();
@@ -43,7 +42,7 @@ public class PicturesDownloadAsyncTask extends AsyncTask<String, Void, Bitmap> {
             in = new BufferedInputStream(urlConnection.getInputStream());
             bitmap = BitmapFactory.decodeStream(in);
             if (bitmap != null) {
-                addBitmapToMemoryCache(strings[0], bitmap);
+                MainActivityViewModel.addBitmapToMemoryCache(strings[0], bitmap);
             }
         } catch (UnknownHostException e) {
             Log.d(TAG, "doInBackground: " + e.getMessage());
