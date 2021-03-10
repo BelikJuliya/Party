@@ -1,5 +1,6 @@
 package android.example.party.view.adapters;
 
+import android.annotation.SuppressLint;
 import android.example.party.viewModel.Person;
 import android.example.party.databinding.GuestBinding;
 import android.graphics.Bitmap;
@@ -15,9 +16,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapter.GuestViewHolder> {
+    private static final String TAG = "PicturesDownloadAsyncTask";
     private List<Person> mGuests;
     private static GuestBinding mGuestBinding;
     private Bitmap mBitmap;
@@ -26,16 +27,6 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     @RequiresApi(api = Build.VERSION_CODES.N)
     public RecyclerViewAdapter(List<Person> demoItemForAdapters) {
         mGuests = demoItemForAdapters;
-//        mGuests = demoItemForAdapters.stream().filter(Person::isInviter).collect(Collectors.toList());
-//        mGuests = demoItemForAdapters.stream().map(if(person -> person.isInviter()))
-//        demoItemForAdapters.forEach(person -> {
-//            if (!person.isInviter()) mGuests.remove(person);
-//        });
-
-//        demoItemForAdapters.stream().filter(person -> {
-//            if (!person.isInviter())
-//        })
-//        mGuests = demoItemForAdapters.stream().filter(person -> !person.isInviter()).collect(Collectors.toList());
     }
 
     @NonNull
@@ -46,9 +37,10 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
         return new GuestViewHolder(mGuestBinding);
     }
 
+    @SuppressLint("LongLogTag")
     @Override
     public void onBindViewHolder(GuestViewHolder holder, int position) {
-        holder.mAvatar.setImageBitmap(mBitmap);
+        holder.mAvatar.setImageBitmap(mGuests.get(position).getAvatar());
         holder.mName.setText(mGuests.get(position).getName());
     }
 
@@ -67,11 +59,5 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
             mName = binding.guestNameTv;
             mAvatar = binding.guestAvatarIv;
         }
-    }
-
-    public void setNewBitmap(Bitmap bitmap, int position) {
-        map.put(position, bitmap);
-//        this.mBitmap = mBitmap;
-        notifyDataSetChanged();
     }
 }

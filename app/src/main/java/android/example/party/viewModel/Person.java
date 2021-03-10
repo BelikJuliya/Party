@@ -1,32 +1,41 @@
 package android.example.party.viewModel;
 
+import android.graphics.Bitmap;
+
 import com.fasterxml.jackson.annotation.JsonAutoDetect;
 
 @JsonAutoDetect
 public class Person {
     private String mName;
-    private String mAvatar;
+    private String mUrl;
     private boolean isInviter;
+    private Bitmap mAvatar;
 
-    public Person(String name, String avatar, boolean isInviter) {
+    public Person(String name, String url, boolean isInviter) {
         mName = name;
-        mAvatar = avatar;
+        mUrl = url;
         this.isInviter = isInviter;
     }
 
-    public Person() {
+    public Person(String name, Bitmap avatar) {
+        mName = name;
+        mAvatar = avatar;
     }
 
     public String getName() {
         return mName;
     }
 
-    public String getAvatar() {
-        return mAvatar;
+    public String getUrl() {
+        return mUrl;
     }
 
     public boolean isInviter() {
         return isInviter;
+    }
+
+    public Bitmap getAvatar() {
+        return mAvatar;
     }
 
     public void setName(String name) {

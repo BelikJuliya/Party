@@ -1,6 +1,5 @@
 package android.example.party.viewModel;
 
-import android.example.party.view.adapters.RecyclerViewAdapter;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -15,7 +14,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.UnknownHostException;
 
-import static android.example.party.viewModel.MainActivityViewModel.addBitmapToMemoryCache;
+//import static android.example.party.viewModel.MainActivityViewModel.addBitmapToMemoryCache;
 
 public class PicturesDownloadAsyncTask extends AsyncTask<String, Void, Bitmap> {
     private final String TAG = this.getClass().getSimpleName();
@@ -24,9 +23,6 @@ public class PicturesDownloadAsyncTask extends AsyncTask<String, Void, Bitmap> {
 
     public PicturesDownloadAsyncTask(ImageView view) {
         mImage = new WeakReference<>(view);
-    }
-
-    public PicturesDownloadAsyncTask(RecyclerViewAdapter adapter) {
     }
 
     @Override
@@ -46,7 +42,7 @@ public class PicturesDownloadAsyncTask extends AsyncTask<String, Void, Bitmap> {
             }
             in = new BufferedInputStream(urlConnection.getInputStream());
             bitmap = BitmapFactory.decodeStream(in);
-            addBitmapToMemoryCache(strings[0], bitmap);
+            //addBitmapToMemoryCache(strings[0], bitmap);
         } catch (UnknownHostException e) {
             Log.d(TAG, "doInBackground: " + e.getMessage());
             e.printStackTrace();
@@ -54,7 +50,7 @@ public class PicturesDownloadAsyncTask extends AsyncTask<String, Void, Bitmap> {
         } catch (IOException e) {
             e.printStackTrace();
         } finally {
-            if (urlConnection != null){
+            if (urlConnection != null) {
                 urlConnection.disconnect();
             }
             try {
