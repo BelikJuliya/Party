@@ -1,6 +1,6 @@
 package android.example.party.model;
 
-import android.content.Context;
+import android.app.Application;
 import android.example.party.R;
 import android.os.Build;
 
@@ -11,19 +11,20 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 class JsonDataSource {
-
-    private Context mContext;
+    private Application mAppContext;
     private String mJson;
+    private MainRepository mRepository;
 
-    JsonDataSource(Context context) {
-        mContext = context;
+    JsonDataSource(MainRepository repository) {
+        mRepository = repository;
+        mAppContext = mRepository.getAppContext();
     }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     String loadJSONFromAsset() {
         if (mJson == null) {
             try {
-                InputStream is = mContext.getApplicationContext().getResources().openRawResource(R.raw.guests);
+                InputStream is = mAppContext.getApplicationContext().getResources().openRawResource(R.raw.guests);
                 int size = is.available();
                 byte[] buffer = new byte[size];
                 is.read(buffer);

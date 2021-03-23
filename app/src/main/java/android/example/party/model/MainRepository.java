@@ -1,7 +1,7 @@
 package android.example.party.model;
 
 import android.app.Application;
-import android.content.Context;
+import android.example.party.viewModel.MainActivityViewModel;
 import android.example.party.viewModel.Person;
 import android.os.Build;
 
@@ -15,18 +15,20 @@ import java.util.List;
 import java.util.Objects;
 
 public class MainRepository {
-    private Context mContext;
     private JsonDataSource mSource;
+    private MainActivityViewModel mViewModel;
+    private Application mAppContext;
 
-    public MainRepository(Application context) {
-        mContext = context;
+    public MainRepository(MainActivityViewModel viewModel) {
+        mViewModel = viewModel;
+        mAppContext = mViewModel.getAppContext();
+        mSource = new JsonDataSource(this);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public List<Person> readPeople() {
         ArrayList<Person> guests = new ArrayList<>();
         try {
-            mSource = new JsonDataSource(mContext);
             JSONObject obj = new JSONObject(Objects.requireNonNull(mSource.getJson()));
             JSONArray jsonArray = obj.getJSONArray("people");
             for (int i = 0; i < jsonArray.length(); i++) {
@@ -44,7 +46,6 @@ public class MainRepository {
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
     public String readMainPictureUrl() {
         String url = null;
-        mSource = new JsonDataSource(mContext);
         try {
             JSONObject obj = new JSONObject(Objects.requireNonNull(mSource.getJson()));
             JSONArray jsonArray = obj.getJSONArray("mainPicture");
@@ -55,5 +56,9 @@ public class MainRepository {
             e.printStackTrace();
         }
         return url;
+    }
+
+    public Application getAppContext() {
+        return mAppContext;
     }
 }

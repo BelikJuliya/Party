@@ -3,12 +3,12 @@ package android.example.party.viewModel;
 import android.app.Application;
 import android.content.Context;
 import android.example.party.model.MainRepository;
-import android.example.party.view.adapters.RecyclerViewAdapter;
+
 import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
-import android.util.Log;
+
 import android.util.LruCache;
 import android.widget.ImageView;
 
@@ -29,8 +29,8 @@ public class MainActivityViewModel extends AndroidViewModel {
 
     public MainActivityViewModel(@NonNull Application application) {
         super(application);
-        mRepository = new MainRepository(application);
         mApp = application;
+        mRepository = new MainRepository(this);
     }
 
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -87,6 +87,10 @@ public class MainActivityViewModel extends AndroidViewModel {
                 = (ConnectivityManager) mApp.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
         return activeNetworkInfo != null;
+    }
+
+    public Application getAppContext() {
+        return mApp;
     }
 }
 
